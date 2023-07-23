@@ -1,7 +1,12 @@
 const app = require('./app');
+const animeController = require('./controllers/animeController');
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-    console.log(`app running on port ${port}`)
-})
+// call animeController's method to
+// fetch and save the initial anime list before the server starts
+animeController.fetchAndSaveInitialAnimes().then(() => {
+  app.listen(port, () => {
+    console.log(`app running on port ${port}`);
+  });
+});
