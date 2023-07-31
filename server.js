@@ -1,5 +1,6 @@
 const app = require('./app');
 const animeController = require('./controllers/animeController');
+const Anime = require('./models/Anime');
 
 const port = process.env.PORT || 3000;
 
