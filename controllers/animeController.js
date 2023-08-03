@@ -1,7 +1,9 @@
 const kitsuAnimeService = require('../services/kitsuAnimeService');
+const Anime = require('../models/Anime');
 
 module.exports.fetchAndSaveInitialAnimes = async () => {
   let trendingAnimes = await kitsuAnimeService.getTrendingAnimes(10);
+
   // loop through kitsu animes call service.getCategories to fetch the
   // categories for each anime
   // 1. synchronous way
@@ -17,8 +19,11 @@ module.exports.fetchAndSaveInitialAnimes = async () => {
       const categories = await kitsuAnimeService.getCategories(id);
       trendingAnime.categories = categories;
       return trendingAnime;
-    }),
+    })
   );
+
+  console.log("animes read from file: ", Anime.fetchAll());
+  console.log(trendingAnimes);
 
   // loop through the array and iteratively call the helper to map from kitsu animes to animes
   // save the animes via anime object’s save method
