@@ -1,13 +1,22 @@
 const app = require('./app');
-const animeController = require('./controllers/animeController');
-const Anime = require('./models/Anime');
+const fs = require('fs');
+const Anime = require('./models/anime');
+const animeService = require('./services/animeService');
 
 const port = process.env.PORT || 3000;
 
-// call animeController's method to
-// fetch and save the initial anime list before the server starts
-animeController.fetchAndSaveInitialAnimes().then(() => {
-  app.listen(port, () => {
-    console.log(`app running on port ${port}`);
+// fetch and save the initial anime list before the server starts if the animes data file not exists
+if (!fs.existsSync(Anime.dataSourcePath)) {
+  animeService.fetchAndSaveInitialAnimes().then(() => {
+    console.log('fetching initial anime list from Kitsu APIs successfully')
+    app.listen(port, () => {
+      console.log(`app running on port ${port}`);
+    });
   });
-});
+} else {
+  {
+    app.listen(port, () => {
+      console.log(`app running on port ${port}`);
+    });
+  }
+}

@@ -12,34 +12,36 @@ class Anime {
     this.rating = data.rating;
     this.startDate = data.startDate;
     this.endDate = data.endDate;
-    this.subType = data.subType;
+    this.subtype = data.subType;
     this.status = data.status;
     this.posterImage = data.posterImage;
-    this.coverImage = data.categories;
+    this.coverImage = data.coverImage;
+    this.episodeCount = data.episodeCount;
     this.categories = data.categories;
   }
 
-  static fetchAll() {
+  static findAll() {
+    let animes = [];
     try {
-      const animes = JSON.parse(fs.readFileSync(Anime.dataSourcePath));
+      animes = JSON.parse(fs.readFileSync(Anime.dataSourcePath));
       return animes;
     } catch (e) {
-      console.log('fetch animes from file failed because of error: ', e);
+      console.log('fetch animes from data file failed because of error: ', e);
     }
-    return ["test"];
+    return animes;
   }
 
   static findById(id) {
-    const animes = this.fetchAll();
+    const animes = this.findAll();
     // return anime or undefined if not found
     return animes.find((anime) => anime.id === id);
   }
 
   save() {
-    const animes = Anime.fetchAll();
+    const animes = Anime.findAll();
     if (this.id == null) {
       // save a new animess
-      this.id = animes[animes.length - 1].id + 1;
+      this.id = animes.length > 0 ? animes[animes.length - 1].id + 1 : 1;
       animes.push(this);
       // could throw exception if write fails
       fs.writeFileSync(Anime.dataSourcePath, JSON.stringify(animes));
@@ -51,6 +53,7 @@ class Anime {
         );
       } else {
         animes[idx] = this;
+        // could throw exception if write fails
         fs.writeFileSync(Anime.dataSourcePath, JSON.stringify(animes));
       }
     }

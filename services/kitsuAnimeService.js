@@ -9,7 +9,7 @@ const kitsuClient = axios.create({
   },
 });
 
-module.exports.getTrendingAnimes = async (count = 50) => {
+const getTrendingAnimes = async (count = 50) => {
   const queryParameter = new URLSearchParams({
     limit: count,
   });
@@ -25,7 +25,7 @@ module.exports.getTrendingAnimes = async (count = 50) => {
   }
 };
 
-module.exports.getCategories = async (id) => {
+const getCategories = async (id) => {
   try {
     const categories = await kitsuClient(`/anime/${id}/categories`);
     return categories.data.data;
@@ -36,3 +36,33 @@ module.exports.getCategories = async (id) => {
     return [];
   }
 };
+
+const getTrendingAnimesWithCategories = async (count = 50) => {
+  let trendingAnimes = await getTrendingAnimes(count);
+
+  // loop through kitsu animes call service.getCategories to fetch the
+  // categories for each anime
+
+  // 1. synchronous way
+  // for (const trendingAnime of trendingAnimes) {
+  //   const id = trendingAnime.id;
+  //   const categories = await this.getCategories(id);
+  //   trendingAnime.categories = categories;
+  // }
+
+  // 2. asynchronous way
+  trendingAnimes = await Promise.all(
+    trendingAnimes.map(async (trendingAnime) => {
+      const id = trendingAnime.id;
+      const categories = await getCategories(id);
+      trendingAnime.categories = categories;
+      return trendingAnime;
+    }),
+  );
+  return trendingAnimes;
+};
+
+module.exports.getTrendingAnimes = getTrendingAnimes;
+module.exports.getCategories = getCategories;
+module.exports.getTrendingAnimesWithCategories = getTrendingAnimesWithCategories;
+module.exports.BASE_URL = BASE_URL;
