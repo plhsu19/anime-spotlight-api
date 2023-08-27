@@ -1,5 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
+const animeRouter = require('./routes/animeRouter');
+const errorController = require('./controllers/errorController');
 
 const app = express();
 
@@ -10,8 +12,10 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use((req, res, next) => {
-  console.log(req.body);
-});
+// Anime routes
+app.use('/animes', animeRouter);
+
+// other routes
+app.use(errorController.getRouteNotFound);
 
 module.exports = app;

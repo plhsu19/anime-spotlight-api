@@ -20,6 +20,7 @@ class Anime {
     this.categories = data.categories;
   }
 
+  // method to return all animes or empty array
   static findAll() {
     let animes = [];
     try {
@@ -40,7 +41,7 @@ class Anime {
   save() {
     const animes = Anime.findAll();
     if (this.id == null) {
-      // save a new animess
+      // save a new anime
       this.id = animes.length > 0 ? animes[animes.length - 1].id + 1 : 1;
       animes.push(this);
       // could throw exception if write fails
