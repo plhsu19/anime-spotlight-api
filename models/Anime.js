@@ -1,23 +1,24 @@
 const fs = require('fs');
 const path = require('path');
+const NotFoundError = require('../errors/notFoundError');
 
 class Anime {
   static dataSourcePath = path.join(__dirname, '..', 'data', 'animes.json');
 
   constructor(data) {
-    this.id = data.id; // incremental number from 1
-    this.title = data.title;
-    this.enTitle = data.enTitle;
-    this.description = data.description;
-    this.rating = data.rating;
-    this.startDate = data.startDate;
-    this.endDate = data.endDate;
-    this.subtype = data.subType;
-    this.status = data.status;
-    this.posterImage = data.posterImage;
-    this.coverImage = data.coverImage;
-    this.episodeCount = data.episodeCount;
-    this.categories = data.categories;
+    this.id = data.id ?? null; // automatically incremental number from 1
+    this.title = data.title ?? null;
+    this.enTitle = data.enTitle ?? null;
+    this.description = data.description ?? null;
+    this.rating = data.rating ?? null;
+    this.startDate = data.startDate ?? null;
+    this.endDate = data.endDate ?? null;
+    this.subtype = data.subtype ?? null;
+    this.status = data.status ?? null;
+    this.posterImage = data.posterImage ?? null;
+    this.coverImage = data.coverImage ?? null;
+    this.episodeCount = data.episodeCount ?? null;
+    this.categories = data.categories ?? null;
   }
 
   // method to return all animes or empty array
@@ -27,15 +28,17 @@ class Anime {
       animes = JSON.parse(fs.readFileSync(Anime.dataSourcePath));
       return animes;
     } catch (e) {
-      console.log('fetch animes from data file failed because of error: ', e);
+      console.warn('fetch animes from data file failed because of error: ', e);
+      if (e.code !== 'ENOENT') throw e;
     }
     return animes;
   }
 
+  // return the anime with id or null if not found
   static findById(id) {
     const animes = this.findAll();
-    // return anime or undefined if not found
-    return animes.find((anime) => anime.id === id);
+    if (animes.length === 0 || id > animes[-1]?.id) return null;
+    return animes.find((anime) => anime.id === id) ?? null;
   }
 
   save() {
@@ -47,17 +50,19 @@ class Anime {
       // could throw exception if write fails
       fs.writeFileSync(Anime.dataSourcePath, JSON.stringify(animes));
     } else {
+      // update an existing anime
+      if (animes.length === 0 || this.id > animes[-1]?.id) {
+        throw new NotFoundError(this.id);
+      }
       const idx = animes.findIndex((anime) => anime.id === this.id);
       if (idx === -1) {
-        throw new Error(
-          'update failed: not found anime id in the existing animes',
-        );
+        throw new NotFoundError(this.id);
       } else {
         animes[idx] = this;
-        // could throw exception if write fails
         fs.writeFileSync(Anime.dataSourcePath, JSON.stringify(animes));
       }
     }
+    return this;
   }
 }
 

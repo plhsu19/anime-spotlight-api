@@ -16,8 +16,8 @@ module.exports.fetchAndSaveInitialAnimes = async () => {
       const anime = animeHelper.mapFromKitsuAnimeToAnime(kitsuAnime);
       anime.save();
     } catch (e) {
-      console.log(
-        'Mapping from kitsu anime %s to anime object and saving it is failed due to error %s',
+      console.warn(
+        'Mapping from kitsu anime %s to anime object and saving it was failed due to error %s',
         kitsuAnime,
         e,
       );
