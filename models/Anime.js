@@ -41,6 +41,20 @@ class Anime {
     return animes.find((anime) => anime.id === id) ?? null;
   }
 
+  static deleteById(id) {
+    const animes = this.findAll();
+    if (animes.length === 0 || id > animes[-1]?.id) {
+      throw new NotFoundError(id);
+    }
+    const idx = animes.findIndex((anime) => anime.id === id);
+    if (idx === -1) {
+      throw new NotFoundError(id);
+    } else {
+      animes.splice(idx, 1);
+      fs.writeFileSync(Anime.dataSourcePath, JSON.stringify(animes));
+    }
+  }
+
   save() {
     const animes = Anime.findAll();
     if (this.id == null) {

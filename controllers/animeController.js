@@ -1,6 +1,7 @@
 const Anime = require('../models/anime');
 const Joi = require('joi');
 const NotFoundError = require('../errors/notFoundError');
+const InvalidRequestError = require('../errors/invalidRequestError');
 
 const INVALID_ID_FORMAT_ERROR_MESSAGE = 'Id must be a number larger than 0';
 const INVALID_REQUEST_BODY_ERROR_MESSAGE =
@@ -21,12 +22,8 @@ module.exports.getAnimes = (req, res, next) => {
       },
     });
   } catch (e) {
-    // Improvement: move the 500 error to the centralized error handler
     console.error(`get animes failed with error: ${e}`);
-    return res.status(500).json({
-      success: false,
-      message: INTERNAL_SYSTEM_FAILURE_ERROR_MESSAGE,
-    });
+    return next(e);
   }
 };
 
@@ -44,6 +41,8 @@ module.exports.validateId = (req, res, next) => {
       id: id,
     });
     if (!!validateResult.error) {
+      // add new error type INVALID_REQUEST_ERROR
+      // move to central handling
       return res.status(400).json({
         success: false,
         message: INVALID_ID_FORMAT_ERROR_MESSAGE,
@@ -51,12 +50,7 @@ module.exports.validateId = (req, res, next) => {
     }
   } catch (e) {
     console.error(`validate id ${req.params.animeId} failed with error: ${e}`);
-    // Improvement: move the 500 error to the centralized error handler
-    console.error(e);
-    return res.status(500).json({
-      success: false,
-      message: INTERNAL_SYSTEM_FAILURE_ERROR_MESSAGE,
-    });
+    return next(e);
   }
 
   // pass the parsed number id to the next controller
@@ -84,6 +78,8 @@ module.exports.validateRequestBody = (req, res, next) => {
 
     const validateResult = schema.validate(req.body);
 
+    // add new error type INVALID_REQUEST_ERROR
+    // move to central handling
     if (!!validateResult.error) {
       return res.status(400).json({
         success: false,
@@ -92,6 +88,9 @@ module.exports.validateRequestBody = (req, res, next) => {
           INVALID_REQUEST_BODY_ERROR_MESSAGE,
       });
     }
+
+    // TODO: add new error type INVALID_REQUEST_ERROR
+    // TODO: move to central handling
     // check the enum for subtype and status
     if (
       !ALLOWED_SUBTYPE_VALUES.includes(req.body.subtype) ||
@@ -104,11 +103,7 @@ module.exports.validateRequestBody = (req, res, next) => {
     }
   } catch (e) {
     console.error(`validate request body ${req.body} failed with error: ${e}`);
-    // TODO: move the error handling to the centralized error handler
-    return res.status(500).json({
-      success: false,
-      message: INTERNAL_SYSTEM_FAILURE_ERROR_MESSAGE,
-    });
+    return next(e);
   }
   next();
 };
@@ -130,17 +125,7 @@ module.exports.getAnime = (req, res, next) => {
     });
   } catch (e) {
     console.error(`get anime with id ${req.id} failed with error: ${e}`);
-    if (e instanceof NotFoundError) {
-      return res.status(404).json({
-        success: false,
-        message: e.message,
-      });
-    } else {
-      return res.status(500).json({
-        success: false,
-        message: INTERNAL_SYSTEM_FAILURE_ERROR_MESSAGE,
-      });
-    }
+    return next(e);
   }
 };
 
@@ -155,11 +140,7 @@ module.exports.createAnime = (req, res, next) => {
     });
   } catch (e) {
     console.error(`create anime failed with error: ${e}`);
-    // TODO: move to centralized error handler
-    return res.status(500).json({
-      success: false,
-      message: INTERNAL_SYSTEM_FAILURE_ERROR_MESSAGE,
-    });
+    return next(e);
   }
 };
 
@@ -174,17 +155,31 @@ module.exports.updateAnime = (req, res, next) => {
     });
   } catch (e) {
     console.error(`update anime with id ${req.id} failed with error: ${e}`);
-    // TODO: move to centralized error handler
-    if (e instanceof NotFoundError) {
-      return res.status(404).json({
-        success: false,
-        message: e.message,
-      });
-    } else {
-      return res.status(500).json({
-        success: false,
-        message: INTERNAL_SYSTEM_FAILURE_ERROR_MESSAGE,
-      });
-    }
+    return next(e);
+  }
+};
+module.exports.deleteAnime = (req, res, next) => {
+  try {
+    Anime.deleteById(req.id);
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (e) {
+    console.error(`delete anime with id ${req.id} failed with error: ${e}`);
+    return next(e);
+  }
+};
+
+module.exports.errorHandler = (err, req, res, next) => {
+  if (err instanceof NotFoundError) {
+    return res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+  } else {
+    return res.status(500).json({
+      success: false,
+      message: INTERNAL_SYSTEM_FAILURE_ERROR_MESSAGE,
+    });
   }
 };

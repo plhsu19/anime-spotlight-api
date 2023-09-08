@@ -24,4 +24,11 @@ router.put(
   animeController.updateAnime,
 );
 
+// DELETE /animes/{animeId}
+router.delete('/:animeId', animeController.validateId, animeController.deleteAnime);
+
+// centralized error handler
+router.use(animeController.errorHandler);
+
+
 module.exports = router;
