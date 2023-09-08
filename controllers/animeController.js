@@ -41,12 +41,7 @@ module.exports.validateId = (req, res, next) => {
       id: id,
     });
     if (!!validateResult.error) {
-      // add new error type INVALID_REQUEST_ERROR
-      // move to central handling
-      return res.status(400).json({
-        success: false,
-        message: INVALID_ID_FORMAT_ERROR_MESSAGE,
-      });
+      throw new InvalidRequestError(INVALID_ID_FORMAT_ERROR_MESSAGE);
     }
   } catch (e) {
     console.error(`validate id ${req.params.animeId} failed with error: ${e}`);
@@ -78,31 +73,28 @@ module.exports.validateRequestBody = (req, res, next) => {
 
     const validateResult = schema.validate(req.body);
 
-    // add new error type INVALID_REQUEST_ERROR
-    // move to central handling
     if (!!validateResult.error) {
-      return res.status(400).json({
-        success: false,
-        message:
-          validateResult.error.details[0]?.message ??
+      throw new InvalidRequestError(
+        validateResult.error.details[0]?.message ??
           INVALID_REQUEST_BODY_ERROR_MESSAGE,
-      });
+      );
     }
 
-    // TODO: add new error type INVALID_REQUEST_ERROR
-    // TODO: move to central handling
     // check the enum for subtype and status
-    if (
-      !ALLOWED_SUBTYPE_VALUES.includes(req.body.subtype) ||
-      !ALLOWED_STATUS_VALUES.includes(req.body.status)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: `subtype must be one of ${ALLOWED_SUBTYPE_VALUES}; status must be one of ${ALLOWED_STATUS_VALUES}`,
-      });
+    const subtype = req.body.subtype;
+    const status = req.body.status;
+    if (!ALLOWED_SUBTYPE_VALUES.includes(subtype)) {
+      throw new InvalidRequestError(
+        `subtype '${subtype}' must be one of [${ALLOWED_SUBTYPE_VALUES}]`,
+      );
+    }
+    if (!ALLOWED_STATUS_VALUES.includes(status)) {
+      throw new InvalidRequestError(
+        `status '${status}' must be one of [${ALLOWED_STATUS_VALUES}]`,
+      );
     }
   } catch (e) {
-    console.error(`validate request body ${req.body} failed with error: ${e}`);
+    console.error(`validate request body failed with error: ${e}`);
     return next(e);
   }
   next();
@@ -173,6 +165,11 @@ module.exports.deleteAnime = (req, res, next) => {
 module.exports.errorHandler = (err, req, res, next) => {
   if (err instanceof NotFoundError) {
     return res.status(404).json({
+      success: false,
+      message: err.message,
+    });
+  } else if (err instanceof InvalidRequestError) {
+    return res.status(400).json({
       success: false,
       message: err.message,
     });
