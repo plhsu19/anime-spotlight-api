@@ -1,4 +1,4 @@
-const Anime = require('../models/anime');
+const Anime = require('../models/Anime');
 const Joi = require('joi');
 const NotFoundError = require('../errors/notFoundError');
 const InvalidRequestError = require('../errors/invalidRequestError');

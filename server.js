@@ -1,6 +1,6 @@
 const app = require('./app');
 const fs = require('fs');
-const Anime = require('./models/anime');
+const Anime = require('./models/Anime');
 const animeService = require('./services/animeService');
 
 const port = process.env.PORT || 3000;
