@@ -60,14 +60,18 @@ module.exports.validateRequestBody = (req, res, next) => {
       title: Joi.string().max(256).required(),
       enTitle: Joi.string().max(256),
       description: Joi.string().max(2000).required(),
-      rating: Joi.number().min(0).max(100).required(),
+      rating: Joi.number().min(0).max(100).required().prefs({ convert: false }),
       startDate: Joi.date().iso().min('1-1-1900').max('now').required(),
       endDate: Joi.date().iso().min('1-1-1900'),
       subtype: Joi.string().required(),
       status: Joi.string().required(),
       posterImage: Joi.string().uri().required(),
       coverImage: Joi.string().uri(),
-      episodeCount: Joi.number().min(0).required(),
+      episodeCount: Joi.number()
+        .integer()
+        .min(1)
+        .required()
+        .prefs({ convert: false }),
       categories: Joi.array().unique().items(Joi.string()),
     });
 
