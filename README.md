@@ -32,14 +32,6 @@ The following endpoints are available in this API:
 - `PUT /animes/:id`: Update a specific anime title by ID.
 - `DELETE /animes/:id`: Delete a specific anime title by ID.
 
-## API Documentation
-
-For detailed documentation of the API endpoints and request/response formats, please refer to the [API documentation](./API.md).
-
 ## Contributing
 
-If you'd like to contribute to this project, please fork the repository and create a pull request with your changes. Before submitting a pull request, please make sure that your changes pass the tests and adhere to the code style guidelines.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+If you'd like to contribute to this project, please fork the repository and create a pull request with your changes.
