@@ -3,7 +3,7 @@ const fs = require('fs');
 const Anime = require('./models/Anime');
 const animeService = require('./services/animeService');
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 // fetch and save the initial anime list before the server starts if the animes data file not exists
 if (!fs.existsSync(Anime.dataSourcePath)) {
