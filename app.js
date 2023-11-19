@@ -8,7 +8,7 @@ const app = express();
 
 app.use(cors({
   origin: '*',
-  methods: ['GET'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 // middleware to parse JSON based request payload
 app.use(express.json());

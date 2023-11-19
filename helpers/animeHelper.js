@@ -5,7 +5,7 @@ const mapFromKitsuAnimeToAnime = (kitsuAnime) => {
   data.title = kitsuAnime.attributes.canonicalTitle;
   data.enTitle = kitsuAnime.attributes.titles.en;
   data.description = kitsuAnime.attributes.description;
-  data.rating = Number.parseFloat(kitsuAnime.attributes.averageRating);
+  data.rating = Math.round(Number.parseFloat(kitsuAnime.attributes.averageRating))/10;
   data.startDate = kitsuAnime.attributes.startDate;
   data.endDate = kitsuAnime.attributes.endDate;
   data.subtype = kitsuAnime.attributes.subtype;
