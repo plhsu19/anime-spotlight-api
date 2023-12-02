@@ -9,7 +9,7 @@ const INVALID_REQUEST_BODY_ERROR_MESSAGE =
 const INTERNAL_SYSTEM_FAILURE_ERROR_MESSAGE =
   'Something went wrong, please try again later or contact support.';
 const ALLOWED_SUBTYPE_VALUES = ['ONA', 'OVA', 'TV', 'movie'];
-const ALLOWED_STATUS_VALUES = ['current', 'finished'];
+const ALLOWED_STATUS_VALUES = ['current', 'finished', 'upcoming'];
 
 module.exports.getAnimes = (req, res, next) => {
   try {
@@ -61,7 +61,7 @@ module.exports.validateRequestBody = (req, res, next) => {
       enTitle: Joi.string().max(256),
       description: Joi.string().max(2000).required(),
       rating: Joi.number().min(0).max(100).required().prefs({ convert: false }),
-      startDate: Joi.date().iso().min('1-1-1900').max('now').required(),
+      startDate: Joi.date().iso().min('1-1-1900').required(),
       endDate: Joi.date().iso().min('1-1-1900'),
       subtype: Joi.string().required(),
       status: Joi.string().required(),
