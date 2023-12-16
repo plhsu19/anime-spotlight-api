@@ -57,46 +57,52 @@ module.exports.validateRequestBody = (req, res, next) => {
   try {
     // check the request body for create and update anime endpoints
     const schema = Joi.object({
-      title: Joi.string().max(256).required(),
-      enTitle: Joi.string().max(256),
-      description: Joi.string().max(2000).required(),
-      rating: Joi.number().min(0).max(100).required().prefs({ convert: false }),
+      title: Joi.string().trim().max(256).required(),
+      enTitle: Joi.string().trim().allow(null).max(256),
+      description: Joi.string().trim().max(2000).required(),
+      rating: Joi.number()
+        .min(0)
+        .max(10)
+        .allow(null)
+        .required()
+        .prefs({ convert: false }),
       startDate: Joi.date().iso().min('1-1-1900').required(),
-      endDate: Joi.date().iso().min('1-1-1900'),
-      subtype: Joi.string().required(),
-      status: Joi.string().required(),
-      posterImage: Joi.string().uri().required(),
-      coverImage: Joi.string().uri(),
+      endDate: Joi.date().iso().allow(null).min(Joi.ref('startDate')),
+      subtype: Joi.string()
+        .valid(...ALLOWED_SUBTYPE_VALUES)
+        .required(),
+      status: Joi.string()
+        .valid(...ALLOWED_STATUS_VALUES)
+        .required(),
+      posterImage: Joi.string().trim().uri().required(),
+      coverImage: Joi.string().trim().allow(null).uri(),
       episodeCount: Joi.number()
         .integer()
         .min(1)
-        .required()
+        .allow(null)
         .prefs({ convert: false }),
-      categories: Joi.array().unique().items(Joi.string()),
+      categories: Joi.array()
+        .unique()
+        .min(1)
+        .items(Joi.string().trim().min(1).max(256))
+        .required(),
     });
 
-    const validateResult = schema.validate(req.body);
+    const { value, error } = schema.validate(req.body, { abortEarly: false });
 
-    if (!!validateResult.error) {
-      throw new InvalidRequestError(
-        validateResult.error.details[0]?.message ??
-          INVALID_REQUEST_BODY_ERROR_MESSAGE,
-      );
-    }
+    if (!!error) {
+      const errorMessages = [];
+      error.details.forEach((detail) => {
+        errorMessages.push(detail.message);
+      });
 
-    // check the enum for subtype and status
-    const subtype = req.body.subtype;
-    const status = req.body.status;
-    if (!ALLOWED_SUBTYPE_VALUES.includes(subtype)) {
       throw new InvalidRequestError(
-        `subtype '${subtype}' must be one of [${ALLOWED_SUBTYPE_VALUES}]`,
+        !errorMessages.join(', ')
+          ? INVALID_REQUEST_BODY_ERROR_MESSAGE
+          : errorMessages.join(', '),
       );
     }
-    if (!ALLOWED_STATUS_VALUES.includes(status)) {
-      throw new InvalidRequestError(
-        `status '${status}' must be one of [${ALLOWED_STATUS_VALUES}]`,
-      );
-    }
+    req.validatedBody = value;
   } catch (e) {
     console.error(`validate request body failed with error: ${e}`);
     return next(e);
@@ -127,7 +133,7 @@ module.exports.getAnime = (req, res, next) => {
 
 module.exports.createAnime = (req, res, next) => {
   try {
-    const createdAnime = new Anime(req.body);
+    const createdAnime = new Anime(req.validatedBody);
     return res.status(201).json({
       success: true,
       data: {
@@ -142,7 +148,7 @@ module.exports.createAnime = (req, res, next) => {
 
 module.exports.updateAnime = (req, res, next) => {
   try {
-    const updateAnime = new Anime({ id: req.id, ...req.body });
+    const updateAnime = new Anime({ id: req.id, ...req.validatedBody });
     return res.status(201).json({
       success: true,
       data: {
