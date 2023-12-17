@@ -2,6 +2,7 @@ const Anime = require('../models/Anime');
 const Joi = require('joi');
 const NotFoundError = require('../errors/notFoundError');
 const InvalidRequestError = require('../errors/invalidRequestError');
+const animeHelper = require('../helpers/animeHelper');
 
 const INVALID_ID_FORMAT_ERROR_MESSAGE = 'Id must be a number larger than 0';
 const INVALID_REQUEST_BODY_ERROR_MESSAGE =
@@ -58,7 +59,7 @@ module.exports.validateRequestBody = (req, res, next) => {
     // check the request body for create and update anime endpoints
     const schema = Joi.object({
       title: Joi.string().trim().max(256).required(),
-      enTitle: Joi.string().trim().allow(null).max(256),
+      enTitle: Joi.string().trim().allow(null).allow('').max(256),
       description: Joi.string().trim().max(2000).required(),
       rating: Joi.number()
         .min(0)
@@ -75,7 +76,7 @@ module.exports.validateRequestBody = (req, res, next) => {
         .valid(...ALLOWED_STATUS_VALUES)
         .required(),
       posterImage: Joi.string().trim().uri().required(),
-      coverImage: Joi.string().trim().allow(null).uri(),
+      coverImage: Joi.string().trim().allow(null).allow('').uri(),
       episodeCount: Joi.number()
         .integer()
         .min(1)
@@ -102,7 +103,11 @@ module.exports.validateRequestBody = (req, res, next) => {
           : errorMessages.join(', '),
       );
     }
-    req.validatedBody = value;
+    req.validatedBody = {
+      ...value,
+      enTitle: animeHelper.nonEmptyString(value.enTitle),
+      coverImage: animeHelper.nonEmptyString(value.coverImage),
+    };
   } catch (e) {
     console.error(`validate request body failed with error: ${e}`);
     return next(e);
