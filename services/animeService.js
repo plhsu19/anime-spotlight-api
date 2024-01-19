@@ -1,7 +1,7 @@
 const kitsuAnimeService = require('./kitsuAnimeService');
 const animeHelper = require('../helpers/animeHelper');
 
-const initialAnimesLength = 100;
+const initialAnimesLength = 25;
 
 module.exports.fetchAndSaveInitialAnimes = async () => {
   const kitsuAnimesWithCategories =

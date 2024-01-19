@@ -107,6 +107,8 @@ module.exports.validateRequestBody = (req, res, next) => {
       ...value,
       enTitle: animeHelper.nonEmptyString(value.enTitle),
       coverImage: animeHelper.nonEmptyString(value.coverImage),
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
     };
   } catch (e) {
     console.error(`validate request body failed with error: ${e}`);
