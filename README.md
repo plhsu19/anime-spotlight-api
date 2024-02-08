@@ -1,37 +1,153 @@
-# Anime List API
+# Anime Spotlight API
 
-This is a RESTful API for managing a list of anime titles. It allows you to create, read, update, and delete anime titles from a database-like source.
+Anime Spotlight API is a backend service designed to support the Anime Spotlight web application, providing CRUD RESTful APIs for managing anime data. Built with Node.js and Express.js, the service is optimized for simplicity and efficient backend management. 
+
+## Features
+
+- **CRUD Operations**: Supports create, read, update, and delete operations for anime data.
+- **RESTful Architecture**: Designed with REST principles for integration with frontend applications.
+- **Data Validation**: Incorporates thorough request validation to ensure data integrity.
+- **Error Handling**: Implements robust error handling for improved reliability and debugging.
 
 ## Getting Started
 
-To get started with this API, you'll need to have Node.js and npm installed on your machine. You can install them from the official Node.js website: https://nodejs.org/
+### Prerequisites
 
-Once you have Node.js and npm installed, you can clone this repository and install the dependencies by running the following commands:
+- Node.js
+- npm (Node.js package manager)
 
-```
-git clone https://github.com/plhsu19/anime-list-api.git 
-cd anime-list-api 
+### Installation
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/plhsu19/anime-spotlight-api.git
+cd anime-spotlight-api
 npm install
 ```
 
-After the dependencies are installed, you can start the API server by running:
+### Running the Server
 
+To start the server in development mode with live reloading, run:
+
+```bash
+npm run start:dev
 ```
+
+This will serve the server on `localhost:8080` by default.
+
+For production mode, run:
+
+```bash
 npm start
 ```
 
-This will start the server on port 3000 by default. You can access the API by sending HTTP requests to http://localhost:3000.
-
 ## API Endpoints
 
-The following endpoints are available in this API:
+Below is a detailed look at the available endpoints and their functionalities, including an example to illustrate how to use the "Get Anime by ID" endpoint.
 
-- `GET /animes`: Get a list of all anime titles.
-- `POST /animes`: Create a new anime title.
-- `GET /animes/:id`: Get a specific anime title by ID.
-- `PUT /animes/:id`: Update a specific anime title by ID.
-- `DELETE /animes/:id`: Delete a specific anime title by ID.
+- **Get All Animes** (`GET /animes`): Fetches a list of all anime titles.
+- **Get Anime by ID** (`GET /animes/:id`): Retrieves detailed information about a specific anime by its ID.
+- **Create New Anime** (`POST /animes`): Allows the creation of a new anime entry.
+- **Update Existing Anime** (`PUT /animes/:id`): Updates the details of an existing anime entry.
+- **Delete Anime** (`DELETE /animes/:id`): Removes an anime entry from the system.
+
+### Get Anime by ID (`GET /animes/:id`)
+
+Retrieves detailed information about a specific anime by its ID.
+
+### Example Usage
+
+To fetch details for an anime with the ID of 1, you would make the following request:
+
+```bash
+curl --location 'localhost:8080/animes/10'
+```
+
+Example Successful Response (status code: 200)
+
+```json
+{
+  "success": true,
+  "data": {
+    "anime": {
+      "id": 1,
+      "title": "Example Anime Title",
+      "enTitle": "Example Anime English Title",
+      "description": "This is a mock description for an example anime. It includes plot points, character development, and thematic elements that captivate the audience.",
+      "rating": 8.5,
+      "startDate": "2021-01-01",
+      "endDate": "2021-06-01",
+      "subtype": "TV",
+      "status": "finished",
+      "posterImage": "https://example.com/poster_image.jpg",
+      "coverImage": "https://example.com/cover_image.jpg",
+      "episodeCount": 24,
+      "categories": [
+        "Adventure",
+        "Fantasy",
+        "Magic"
+      ]
+    }
+  }
+}
+```
+
+## Error Handling
+
+Comprehensive error handling for validation errors (400), not found errors (404), and server errors (500), ensuring a smooth user experience.
+
+### 400 Bad Request
+
+Example: Requesting with invalid field data:
+
+```json
+{
+  "success": false,
+  "message": "\"rating\" must be less than or equal to 10, \"status\" must be one of [current, finished, upcoming]"
+}
+```
+
+### 404 Not Found
+
+Example: Requesting a non-existent anime ID:
+
+```json
+{
+  "success": false,
+  "message": "Anime with id 999 was not found"
+}
+```
+
+### 500 Internal Server Error
+
+Example: A server-side issue that prevents request processing:
+
+```json
+{
+  "success": false,
+  "message": "Something went wrong, please try again later or contact support."
+}
+```
+
+## **Data Storage and Model Class**
+
+For ease of development, data is stored in a local JSON file (**`animes.json`**), simulating a database's functionality in a lightweight manner. The **`Anime.js`** model class encapsulates anime entity properties and provides methods for data manipulation, offering an MVC-like model for server interactions.
 
 ## Contributing
 
-If you'd like to contribute to this project, please fork the repository and create a pull request with your changes.
+Contributions are welcome!
+
+- **Reporting Bugs**: If you encounter any bugs or missing features, please feel free to raise an issue in the repository.
+- **Making Contributions**:  If you'd like to contribute:
+    1. **Fork** the repository.
+    2. **Create a new branch** for your changes.
+    3. **Open a pull request** against the main branch when you're ready to submit your changes, and ask for a review.
+
+## License
+
+This project is open source - see the [MIT License](LICENSE) file for details.
+
+## Contact
+
+For any inquiries or contributions, please contact Pei-Lun Hsu at **peilun.hsu.tw@gmail.com**.
