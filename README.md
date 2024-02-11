@@ -58,7 +58,7 @@ Retrieves detailed information about a specific anime by its ID.
 
 ### Example Usage
 
-To fetch details for an anime with the ID of 1, you would make the following request:
+To fetch details for an anime with the ID of 10, you would make the following request:
 
 ```bash
 curl --location 'localhost:8080/animes/10'
@@ -71,7 +71,7 @@ Example Successful Response (status code: 200)
   "success": true,
   "data": {
     "anime": {
-      "id": 1,
+      "id": 10,
       "title": "Example Anime Title",
       "enTitle": "Example Anime English Title",
       "description": "This is a mock description for an example anime. It includes plot points, character development, and thematic elements that captivate the audience.",
@@ -92,6 +92,64 @@ Example Successful Response (status code: 200)
   }
 }
 ```
+
+This example demonstrates how to retrieve and display information for a specific anime using its ID, providing an insight into the type of data returned by the API.
+
+### Create New Anime (`POST /animes`)
+
+Allows the creation of a new anime entry in the database.
+
+### Example Usage
+
+To create a new anime entry, you would make the following request:
+
+```bash
+curl --location --request POST 'http://localhost:8080/animes' \
+--header 'Content-Type: application/json' \
+--data '{
+  "title": "New Anime Title",
+  "enTitle": "New Anime English Title",
+  "description": "Description of the new anime, including plot points and character development.",
+  "rating": 9.0,
+  "startDate": "2023-01-01",
+  "endDate": "2023-12-31",
+  "subtype": "TV",
+  "status": "upcoming",
+  "posterImage": "https://example.com/new_poster_image.jpg",
+  "coverImage": "https://example.com/new_cover_image.jpg",
+  "episodeCount": 12,
+  "categories": ["Action", "Adventure", "Fantasy"]
+}'
+
+```
+
+### Example Successful Response (status code: 201)
+
+```json
+{
+  "success": true,
+  "data": {
+    "anime": {
+      "id": 11,
+      "title": "New Anime Title",
+      "enTitle": "New Anime English Title",
+      "description": "Description of the new anime, including plot points and character development.",
+      "rating": 9.0,
+      "startDate": "2023-01-01",
+      "endDate": "2023-12-31",
+      "subtype": "TV",
+      "status": "upcoming",
+      "posterImage": "https://example.com/new_poster_image.jpg",
+      "coverImage": "https://example.com/new_cover_image.jpg",
+      "episodeCount": 12,
+      "categories": ["Action", "Adventure", "Fantasy"]
+    }
+  }
+}
+
+```
+
+This example demonstrates how to create a new anime entry using the API, providing an insight into the required data structure and the type of response data returned by the API.
 
 ## Error Handling
 
