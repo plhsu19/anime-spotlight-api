@@ -1,6 +1,6 @@
 # Anime Spotlight API
 
-Anime Spotlight API is a backend service designed to support the Anime Spotlight web application, providing CRUD RESTful APIs for managing anime data. Built with Node.js and Express.js, the service is optimized for simplicity and efficient backend management. 
+Anime Spotlight API is a backend service designed to support the [Anime Spotlight](https://github.com/plhsu19/anime-spotlight-ui) web application, providing CRUD RESTful APIs for managing anime data. Built with Node.js and Express.js, the service is optimized for simplicity and efficient backend management. 
 
 ## Features
 
