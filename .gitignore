@@ -1,4 +1,5 @@
 node_modules
 
 # data source
-# animes.json //uncomment this to fetch the initial data from the kitsu api
+# uncomment this to fetch the initial data from the kitsu api
+animes.json 
